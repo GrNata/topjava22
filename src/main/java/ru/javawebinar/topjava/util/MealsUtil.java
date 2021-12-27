@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.function.Predicate;
+import java.util.Collection;
 
 public class MealsUtil {
 
@@ -31,8 +33,16 @@ public class MealsUtil {
 //        mealsTo.forEach(System.out::println);
 //    }
 
+    public static List<MealTo> getTos(Collection<Meal> meals, int caloriesPerday) {
+        return filterByPredicate(meals, caloriesPerday, meal -> true);
+    }
+
+    public static List<MealTo> getFilteredTos(Collection<Meal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
+        return filterByPredicate(meals, caloriesPerDay, meal -> TimeUtil.isBetweenHalfOpen(meal.getTime(), startTime, endTime));
+    }
+
 //    public static List<MealTo> filteredByStreams(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-    public static List<MealTo> filteredByStreams(List<Meal> meals, int caloriesPerDay) {
+    public static List<MealTo> filterByPredicate(Collection<Meal> meals, int caloriesPerDay, Predicate<Meal> filter) {
         Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
                 .collect(
                         Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
@@ -46,7 +56,7 @@ public class MealsUtil {
     }
 
     private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 
 }

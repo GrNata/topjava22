@@ -36,6 +36,7 @@ public class MealsUtil {
                 .filter(filter)
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
+//                .toList();
     }
 
     private static MealTo createTo(Meal meal, boolean excess) {

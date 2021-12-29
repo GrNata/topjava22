@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.model;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import org.hibernate.Hibernate;
 
 @MappedSuperclass
 // http://stackoverflow.com/questions/594597/hibernate-annotations-which-is-better-field-or-property-access
@@ -49,7 +50,8 @@ public abstract class AbstractBaseEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+//        if (o == null || getClass() != o.getClass()) {
+        if (o == null || !getClass().equals(Hibernate.getClass(o))) {
             return false;
         }
         AbstractBaseEntity that = (AbstractBaseEntity) o;

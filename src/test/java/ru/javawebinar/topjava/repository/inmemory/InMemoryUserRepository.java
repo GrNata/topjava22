@@ -29,6 +29,7 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
         return getCollection().stream()
                 .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
+//                .toList();
     }
 
     @Override

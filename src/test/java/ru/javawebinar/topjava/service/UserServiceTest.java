@@ -98,4 +98,5 @@ public class UserServiceTest {
         List<User> all = service.getAll();
         USER_MATCHER.assertMatch(all, admin, user);
     }
+
 }

@@ -19,8 +19,10 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-//@Repository
-public abstract class JdbcMealRepository<T> implements MealRepository {
+@Repository
+public class JdbcMealRepository implements MealRepository {
+
+//public abstract class JdbcMealRepository<T> implements MealRepository {
 
     private static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
@@ -32,7 +34,8 @@ public abstract class JdbcMealRepository<T> implements MealRepository {
 
 //    @Autowired
 //    public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-    JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+//    JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("meals")
                 .usingGeneratedKeyColumns("id");
@@ -41,33 +44,33 @@ public abstract class JdbcMealRepository<T> implements MealRepository {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    protected abstract T toDbDateTime(LocalDateTime ldt);
-
-    @Repository
-    @Profile(Profiles.POSTGRES_DB)
-    public static class Java8JdbcMealRepository extends JdbcMealRepository<LocalDateTime> {
-        public Java8JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-            super(jdbcTemplate, namedParameterJdbcTemplate);
-        }
-
-        @Override
-        protected LocalDateTime toDbDateTime(LocalDateTime ldt) {
-            return ldt;
-        }
-    }
-
-    @Repository
-    @Profile(Profiles.HSQL_DB)
-    public static class TimestampJdbcMealRepository extends JdbcMealRepository<Timestamp> {
-        public TimestampJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-            super(jdbcTemplate, namedParameterJdbcTemplate);
-        }
-
-        @Override
-        protected Timestamp toDbDateTime(LocalDateTime ldt) {
-            return Timestamp.valueOf(ldt);
-        }
-    }
+//    protected abstract T toDbDateTime(LocalDateTime ldt);
+//
+//    @Repository
+//    @Profile(Profiles.POSTGRES_DB)
+//    public static class Java8JdbcMealRepository extends JdbcMealRepository<LocalDateTime> {
+//        public Java8JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+//            super(jdbcTemplate, namedParameterJdbcTemplate);
+//        }
+//
+//        @Override
+//        protected LocalDateTime toDbDateTime(LocalDateTime ldt) {
+//            return ldt;
+//        }
+//    }
+//
+//    @Repository
+//    @Profile(Profiles.HSQL_DB)
+//    public static class TimestampJdbcMealRepository extends JdbcMealRepository<Timestamp> {
+//        public TimestampJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+//            super(jdbcTemplate, namedParameterJdbcTemplate);
+//        }
+//
+//        @Override
+//        protected Timestamp toDbDateTime(LocalDateTime ldt) {
+//            return Timestamp.valueOf(ldt);
+//        }
+//    }
 
 
     @Override
@@ -76,6 +79,7 @@ public abstract class JdbcMealRepository<T> implements MealRepository {
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
                 .addValue("calories", meal.getCalories())
+//                .addValue("date_time", meal.getDateTime())
                 .addValue("date_time", meal.getDateTime())
                 .addValue("user_id", userId);
 
@@ -115,7 +119,7 @@ public abstract class JdbcMealRepository<T> implements MealRepository {
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
-//                ROW_MAPPER, userId, startDateTime, endDateTime);
-                    ROW_MAPPER, userId, toDbDateTime(startDateTime), toDbDateTime(endDateTime));
+                ROW_MAPPER, userId, startDateTime, endDateTime);
+//                    ROW_MAPPER, userId, toDbDateTime(startDateTime), toDbDateTime(endDateTime));
     }
 }
